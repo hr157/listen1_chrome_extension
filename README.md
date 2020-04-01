@@ -1,6 +1,6 @@
-Listen 1 (Chrome Extension) V2.2.0
+Listen 1 (Chrome Extension) V2.5.2
 ==========
-（最后更新于2019年05月26日）
+（最后更新于2019年11月27日）
 
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
@@ -46,6 +46,26 @@ Firefox打包安装
 
 更新日志
 -------
+`2019-11-27`
+* 加入法语支持, 特别感谢 @Leoche
+
+`2019-09-07`
+* 修复migu无法播放的bug
+
+`2019-08-09`
+* 增加深色主题
+
+`2019-07-03`
+* 修复咪咕音乐无法播放的bug
+
+`2019-06-24`
+* 增加咪咕音乐
+* 修复网易音乐无法播放的bug
+* 修复酷狗音乐无法播放的bug
+
+`2019-06-23`
+* 修复无法连接到github的bug
+
 `2019-05-26`
 * 修复酷狗音乐无法播放的bug
 

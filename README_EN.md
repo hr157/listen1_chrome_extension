@@ -1,6 +1,6 @@
-Listen 1 (Chrome Extension) V2.2.0
+Listen 1 (Chrome Extension) V2.5.2
 ==========
-（Last Update 04/04/2019)
+（Last Update Sep 7th, 2019)
 
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
@@ -33,6 +33,26 @@ Install (Firefox)
 
 Changelog
 -------
+`2019-11-27`
+* add frech language, special thanks to @Leoche
+
+`2019-09-07`
+* fix migu
+
+`2019-08-09`
+* add dark theme
+
+`2019-07-03`
+* fix migu play error
+
+`2019-06-24`
+* add migu music
+* fix kugou play bug
+* fix netease play bug
+
+`2019-06-23`
+* fix connect to github.com error
+
 `2019-05-26`
 * fix kugou music can't play bug
 

@@ -5,11 +5,11 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-unresolved */
 const main = () => {
-  Storage.prototype.setObject = function setObject(key, value) {
+  localStorage.__proto__.setObject = function setObject(key, value) {
     this.setItem(key, JSON.stringify(value));
   };
 
-  Storage.prototype.getObject = function getObject(key) {
+  localStorage.__proto__.getObject = function getObject(key) {
     const value = this.getItem(key);
     return value && JSON.parse(value);
   };
@@ -107,11 +107,14 @@ const main = () => {
     if (sourceId === 6) {
       return 'bilibili';
     }
+    if (sourceId === 7) {
+      return 'migu';
+    }
     return '';
   }
 
 
-  app.controller('TranslateController', ['$scope', '$translate', '$http', ($scope, $translate, $http) => {
+  app.controller('ProfileController', ['$scope', '$translate', '$http', ($scope, $translate, $http) => {
     let defaultLang = 'zh_CN';
     const supportLangs = ['zh_CN', 'en_US'];
     if (supportLangs.indexOf(navigator.language) !== -1) {
@@ -133,8 +136,24 @@ const main = () => {
         localStorage.setObject('language', langKey);
       });
     };
-
     $scope.setLang(defaultLang);
+
+    let defaultTheme = 'white';
+    if (localStorage.getObject('theme') !== null) {
+      defaultTheme = localStorage.getObject('theme');
+    }
+    $scope.setTheme = (theme) => {
+      var themeFiles = {
+        'white':"css/iparanoid.css",
+        'black': "css/origin.css"
+      }
+      // You can change the language during runtime
+      if(themeFiles[theme]!==undefined) {
+        document.getElementById('theme').href = themeFiles[theme];
+        localStorage.setObject('theme', theme);
+      }      
+    };
+    $scope.setTheme(defaultTheme);
   }]);
 
   // control main view of page, it can be called any place
@@ -821,7 +840,9 @@ const main = () => {
           }, 0);
         }
         $scope.enableGlobalShortCut = localStorage.getObject('enable_global_shortcut');
+        $scope.enableLyricFloatingWindow = localStorage.getObject('enable_lyric_floating_window');
         $scope.applyGlobalShortcut();
+        $scope.openLyricFloatingWindow();
       };
 
       $scope.saveLocalSettings = () => {
@@ -1069,6 +1090,10 @@ const main = () => {
           $scope.lyricArray = parseLyric(lyric);
         });
         $scope.lastTrackId = data;
+        if (typeof chrome == 'undefined') {
+          const { ipcRenderer } = require('electron');
+          ipcRenderer.send('currentLyric', track.title);
+        }
       });
 
       $scope.$on('currentTrack:position', (event, data) => {
@@ -1090,6 +1115,10 @@ const main = () => {
             scrollTop: `${offset}px`,
           }, 500);
           $scope.lyricLineNumber = lastObject.lineNumber;
+          if (typeof chrome == 'undefined') {
+            const { ipcRenderer } = require('electron');
+            ipcRenderer.send('currentLyric', $scope.lyricArray[lastObject.lineNumber].content);
+          }
         }
       });
 
@@ -1191,6 +1220,24 @@ const main = () => {
         ipcRenderer.send('control', message);
       };
 
+      $scope.openLyricFloatingWindow = (toggle) => {
+        if (typeof chrome !== 'undefined') {
+          return;
+        }
+        let message = '';
+        if (toggle === true) {
+          $scope.enableLyricFloatingWindow = !$scope.enableLyricFloatingWindow;
+        }
+        if ($scope.enableLyricFloatingWindow === true) {
+          message = 'enable_lyric_floating_window';
+        } else {
+          message = 'disable_lyric_floating_window';
+        }
+        localStorage.setObject('enable_lyric_floating_window', $scope.enableLyricFloatingWindow);
+        const { ipcRenderer } = require('electron');
+        ipcRenderer.send('control', message);
+      };
+
       if (typeof chrome === 'undefined') {
         require('electron').ipcRenderer.on('globalShortcut', (event, message) => {
           if (message === 'right') {
@@ -1205,7 +1252,8 @@ const main = () => {
 
   app.controller('InstantSearchController', ['$scope', '$http', '$timeout', '$rootScope', 'angularPlayer', 'loWeb',
     ($scope, $http, $timeout, $rootScope, angularPlayer, loWeb) => {
-      $scope.originpagelog = [1, 1, 1, 1, 1, 1, 1]; // [网易,虾米,QQ,NULL,酷狗,酷我,bilibili]
+      // notice: douban is skipped so array should plus 1
+      $scope.originpagelog = Array(getAllProviders().length+1).fill(1);  // [网易,虾米,QQ,NULL,酷狗,酷我,bilibili, migu]
       $scope.tab = 0;
       $scope.keywords = '';
       $scope.loading = false;
