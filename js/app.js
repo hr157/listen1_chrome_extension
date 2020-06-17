@@ -144,14 +144,14 @@ const main = () => {
     }
     $scope.setTheme = (theme) => {
       var themeFiles = {
-        'white':"css/iparanoid.css",
+        'white': "css/iparanoid.css",
         'black': "css/origin.css"
       }
       // You can change the language during runtime
-      if(themeFiles[theme]!==undefined) {
+      if (themeFiles[theme] !== undefined) {
         document.getElementById('theme').href = themeFiles[theme];
         localStorage.setObject('theme', theme);
-      }      
+      }
     };
     $scope.setTheme(defaultTheme);
   }]);
@@ -244,6 +244,11 @@ const main = () => {
           $scope.playlist_source_url = data.info.source_url;
           $scope.list_id = data.info.id;
           $scope.is_mine = (data.info.id.slice(0, 2) === 'my');
+          const isfavUrl = '/playlist_contains?type=favorite&list_id='+data.info.id;
+          loWeb.get(isfavUrl).success((res) => {
+            $scope.is_favorite = res.result;
+          });
+
           $scope.window_type = 'list';
         });
       };
@@ -568,6 +573,7 @@ const main = () => {
           url,
           method: 'POST',
           data: $httpParamSerializerJQLike({
+            playlist_type: 'my',
             list_id,
           }),
           headers: {
@@ -588,6 +594,7 @@ const main = () => {
           method: 'POST',
           data: $httpParamSerializerJQLike({
             list_id,
+            playlist_type: 'my'
           }),
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -599,7 +606,6 @@ const main = () => {
           Notification.success($translate.instant('_REMOVE_PLAYLIST_SUCCESS'));
         });
       };
-
 
       $scope.downloadFile = (fileName, fileType, content) => {
         window.URL = window.URL || window.webkitURL;
@@ -738,6 +744,53 @@ const main = () => {
           }
         });
       };
+
+      $scope.favoritePlaylist = (list_id) => {
+        if ($scope.is_favorite) {
+          $scope.removeFavoritePlaylist(list_id);
+          $scope.is_favorite = 0;
+        } else {
+          $scope.addFavoritePlaylist(list_id);
+          $scope.is_favorite = 1;
+        }
+      }
+      $scope.addFavoritePlaylist = (list_id) => {
+        loWeb.post({
+          url: '/clone_playlist',
+          method: 'POST',
+          data: $httpParamSerializerJQLike({
+            playlist_type: 'favorite',
+            list_id,
+          }),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }).success((addResult) => {
+          $rootScope.$broadcast('favoriteplaylist:update');
+          Notification.success($translate.instant('_FAVORITE_PLAYLIST_SUCCESS'));
+        });
+      };
+
+      $scope.removeFavoritePlaylist = (list_id) => {
+        const url = '/remove_myplaylist';
+
+        loWeb.post({
+          url,
+          method: 'POST',
+          data: $httpParamSerializerJQLike({
+            list_id,
+            playlist_type: 'favorite'
+          }),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }).success(() => {
+          $rootScope.$broadcast('favoriteplaylist:update');
+          // $scope.closeWindow();
+          Notification.success($translate.instant('_UNFAVORITE_PLAYLIST_SUCCESS'));
+        });
+      };
+
     },
   ]);
 
@@ -1253,7 +1306,7 @@ const main = () => {
   app.controller('InstantSearchController', ['$scope', '$http', '$timeout', '$rootScope', 'angularPlayer', 'loWeb',
     ($scope, $http, $timeout, $rootScope, angularPlayer, loWeb) => {
       // notice: douban is skipped so array should plus 1
-      $scope.originpagelog = Array(getAllProviders().length+1).fill(1);  // [网易,虾米,QQ,NULL,酷狗,酷我,bilibili, migu]
+      $scope.originpagelog = Array(getAllProviders().length + 1).fill(1);  // [网易,虾米,QQ,NULL,酷狗,酷我,bilibili, migu]
       $scope.tab = 0;
       $scope.keywords = '';
       $scope.loading = false;
@@ -1282,7 +1335,7 @@ const main = () => {
           $scope.totalpage = Math.ceil(totalItem / 20);
           $scope.totalpagelog[$scope.tab] = $scope.totalpage;
         } else {
-        // just switch tab
+          // just switch tab
           $scope.totalpage = $scope.totalpagelog[$scope.tab];
         }
       }
@@ -1583,10 +1636,17 @@ const main = () => {
     'angularPlayer', 'loWeb',
     ($http, $scope, $timeout, angularPlayer, loWeb) => {
       $scope.myplaylists = [];
+      $scope.favoriteplaylists = [];
 
       $scope.loadMyPlaylist = () => {
         loWeb.get('/show_myplaylist').success((data) => {
           $scope.myplaylists = data.result;
+        });
+      };
+
+      $scope.loadFavoritePlaylist = () => {
+        loWeb.get('/show_favoriteplaylist').success((data) => {
+          $scope.favoriteplaylists = data.result;
         });
       };
 
@@ -1600,6 +1660,10 @@ const main = () => {
       });
       $scope.$on('myplaylist:update', (event, data) => {
         $scope.loadMyPlaylist();
+      });
+
+      $scope.$on('favoriteplaylist:update', (event, data) => {
+        $scope.loadFavoritePlaylist();
       });
     },
   ]);

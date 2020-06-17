@@ -1,13 +1,22 @@
-Listen 1 (Chrome Extension) V2.5.2
+Listen 1 (Chrome Extension) V2.7.2
 ==========
-（Last Update Sep 7th, 2019)
+（Last Update April 27th, 2020)
 
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
 One for all free music in China
 ----
 When I found many songs are unavailable because copyright issue, I realized there's something I should do.
-Mom never need to worry about I can't listen my favorite songs. Listen 1 includes song libraries from Netease, QQ, Kugou, Kuwo, Bilibili.
+Mom never need to worry about I can't listen my favorite songs. 
+
+Supported music platform:
+
+* Netease
+* QQ
+* Kugou
+* Kuwo
+* Bilibili
+* Migu
 
 Search songs, listen songs from multiple platforms, that's `Listen 1`.
 
@@ -33,6 +42,14 @@ Install (Firefox)
 
 Changelog
 -------
+`2020-04-30`
+* fix migu poor music quality bug
+
+`2020-04-27`
+* support adding playlist to favorite, special thanks to @zhenyiLiang
+* fix migu music
+* some minor optimaze
+
 `2019-11-27`
 * add frech language, special thanks to @Leoche
 
