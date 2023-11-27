@@ -920,6 +920,12 @@
                                   >
                                     Korean
                                   </button>
+                                  <button 
+                                    class="language-button" 
+                                    ng-click="setLang('pt-BR')"
+                                  >
+                                    Brazilian Portuguese
+                                  </button>
                                 </div>
                               </div>
                               <div class="settings-title">
@@ -1466,7 +1472,7 @@
                                 </p>
                                 <p>{{_DESIGNER}} ({{_THEME_WHITE}}): iparanoid </p>
                                 <p>{{_DESIGNER}} ({{_THEME_MODERN_BLACK}}, {{_THEME_MODERN_WHITE}}): 814959822, Antion</p>
-                                <p>{{_VERSION}}: v2.27.0 {{_LICENSE_NOTICE}}</p>
+                                <p>{{_VERSION}}: v2.31.0 {{_LICENSE_NOTICE}}</p>
                                 <p ng-show='lastestVersion!=""'>
                                   {{_LATEST_VERSION}}: {{lastestVersion}}
                                 </p>
@@ -1865,9 +1871,13 @@
                           ng-src="{{ currentPlaying.img_url }}"
                           err-src="https://y.gtimg.cn/mediastyle/global/img/album_300.png"
                         />
+                        <!-- Switching icon when hover -->
                         <div class="mask">
-                          <svg class="feather">
+                          <svg class="feather" ng-if="getCurrentUrl() != '/now_playing'">
                             <use href="#chevrons-up"></use>
+                          </svg>
+                          <svg class="feather" ng-if="getCurrentUrl() === '/now_playing'">
+                            <use href="#chevrons-down"></use>
                           </svg>
                         </div>
                       </div>
@@ -3538,7 +3548,7 @@
                               </p>
                               <p>{{_DESIGNER}} ({{_THEME_WHITE}}): iparanoid </p>
                               <p>{{_DESIGNER}} ({{_THEME_MODERN_BLACK}}, {{_THEME_MODERN_WHITE}}): 814959822, Antion</p>
-                              <p>{{_VERSION}}: v2.27.0 {{_LICENSE_NOTICE}}</p>
+                              <p>{{_VERSION}}: v2.31.0 {{_LICENSE_NOTICE}}</p>
                               <p ng-show='lastestVersion!=""'>
                                 {{_LATEST_VERSION}}: {{lastestVersion}}
                               </p>
