@@ -1,6 +1,6 @@
-# Listen 1 (Chrome Extension) V2.32.0
+# Listen 1 (Chrome Extension) V2.33.0
 
-（Last Update April 1st, 2024)
+（Last Update June 17th, 2025)
 
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
@@ -47,6 +47,20 @@ Making your own playlist is also supported.
 
 ## Changelog
 
+`2025-06`
+
+Fix bugs：
+
+- fix migu playing error
+- fix playing control problem (#1200) (#1201) （thanks @reserveword ）
+- fix electron remote to support more electron version （thanks @xihale ）
+- fix performance issue for new theme (#1216) （thanks @mikelxk ）
+- fix electron cookie send problem
+- fix spell error (thanks Nicholas Wilson)
+  Features：
+
+- migrate chrome extension manifest version to V3
+
 `2023-08 ~ 2024-04`
 
 Fix bugs：
@@ -82,7 +96,7 @@ Fix bugs:
 Features：
 
 - Search playlist for bilibili video (thanks @Wei-bin-Wu)
-- Optimaze modern theme style (thanks @814959822)
+- Optimize modern theme style (thanks @814959822)
 
 Fix bugs:
 
@@ -188,7 +202,7 @@ Refactor：
 
 - Change music platform resource API to class #553
 - remove angular dependency for github module #532 (thanks @Dumeng)
-- emove angular dependency for lastfm module #532 (thanks @Dumeng)
+- remove angular dependency for lastfm module #532 (thanks @Dumeng)
 - UX optimaze #537
 
 Fix Bugs：
@@ -227,7 +241,7 @@ Fix bugs:
 
 - Fix media control invalid because new es6 optional chain (thanks @mikelxk)
 - Fix volume control not working (thanks @mikelxk)
-- Fix scorll bar style in firefox (thanks @RecluseWind)
+- Fix scroll bar style in firefox (thanks @RecluseWind)
 - Fix kugou music cover url
 - Fix kugou music play url
 - Fix notification not shown bug
@@ -239,7 +253,7 @@ Features:
 
 - Support playlist filters and top playlist （special thanks [lyswhut/lx-music-desktop](https://github.com/lyswhut/lx-music-desktop) ）
 - Add Traditional Chinese language (thanks @yujiangqaq)
-- Add chrome media panel functino: prev/next track, back/forward (thanks @mikelxk）
+- Add chrome media panel function: prev/next track, back/forward (thanks @mikelxk）
 - New lyric floating window, support config font size, color and background transparency
 
 Refactor：
@@ -280,7 +294,7 @@ Fix bugs：
 
 - fix MediaSession error when not supported (thanks @Jyuaan)
 - fix migu playlist 404 link
-- fix current playling music list modal (thanks @Demeng)
+- fix current playing music list modal (thanks @Demeng)
 
 `2020-12-28`
 
@@ -293,7 +307,7 @@ Fix bugs：
 - fix bug: migu playlist shows first 20 tracks
 - fix bug: netease/kugou search error not handle
 - fix bug: xiami lyric parse error
-- change manitest permession config to pass chrome web store review
+- change manitest permission config to pass chrome web store review
 
 `2020-12-22`
 

@@ -161,44 +161,55 @@ class netease {
   static ne_ensure_cookie(callback) {
     const domain = 'https://music.163.com';
     const nuidName = '_ntes_nuid';
-    const nnidName = '_ntes_nnid';
+    const nnidName = '_ntes_nnid3';
+    const nuidValue = this._create_secret_key(32);
+    const nnidValue = `${nuidValue},${new Date().getTime()}`;
+    const nmtidName = 'NMTID';
+    const nmtidValue = '0';
 
-    cookieGet(
-      {
-        url: domain,
-        name: nuidName,
+    // netease default cookie expire time: 100 years
+    const expire =
+      (new Date().getTime() + 1e3 * 60 * 60 * 24 * 365 * 100) / 1000;
+    async.concat(
+      [
+        { url: domain, name: nuidName },
+        { url: domain, name: nnidName },
+        { url: domain, name: nmtidName },
+      ],
+      (item, cb) => {
+        cookieGet(item, (result) => cb(null, result));
       },
-      (cookie) => {
-        if (cookie == null) {
-          const nuidValue = this._create_secret_key(32);
-          const nnidValue = `${nuidValue},${new Date().getTime()}`;
-          // netease default cookie expire time: 100 years
-          const expire =
-            (new Date().getTime() + 1e3 * 60 * 60 * 24 * 365 * 100) / 1000;
-
-          cookieSet(
-            {
-              url: domain,
-              name: nuidName,
-              value: nuidValue,
-              expirationDate: expire,
-            },
+      (_, results) => {
+        if (results.filter((i) => i === null).length > 0) {
+          async.concat(
+            [
+              {
+                url: domain,
+                name: nuidName,
+                value: nuidValue,
+                expirationDate: expire,
+                sameSite: 'no_restriction',
+              },
+              {
+                url: domain,
+                name: nnidName,
+                value: nnidValue,
+                expirationDate: expire,
+                sameSite: 'no_restriction',
+              },
+              {
+                url: domain,
+                name: nmtidName,
+                value: nmtidValue,
+                expirationDate: expire,
+                sameSite: 'no_restriction',
+              },
+            ],
+            cookieSet,
             () => {
-              cookieSet(
-                {
-                  url: domain,
-                  name: nnidName,
-                  value: nnidValue,
-                  expirationDate: expire,
-                },
-                () => {
-                  callback(null);
-                }
-              );
+              callback(null);
             }
           );
-        } else {
-          callback(null);
         }
       }
     );
@@ -405,54 +416,56 @@ class netease {
     };
     return {
       success: (fn) => {
-        axios
-          .post(target_url, new URLSearchParams(req_data))
-          .then((response) => {
-            const { data } = response;
-            let result = [];
-            let total = 0;
-            if (searchType === '0') {
-              result = data.result.songs.map((song_info) => ({
-                id: `netrack_${song_info.id}`,
-                title: song_info.name,
-                artist: song_info.artists[0].name,
-                artist_id: `neartist_${song_info.artists[0].id}`,
-                album: song_info.album.name,
-                album_id: `nealbum_${song_info.album.id}`,
-                source: 'netease',
-                source_url: `https://music.163.com/#/song?id=${song_info.id}`,
-                img_url: song_info.album.picUrl,
-                // url: `netrack_${song_info.id}`,
-                url: !this.is_playable(song_info) ? '' : undefined,
-              }));
-              total = data.result.songCount;
-            } else if (searchType === '1') {
-              result = data.result.playlists.map((info) => ({
-                id: `neplaylist_${info.id}`,
-                title: info.name,
-                source: 'netease',
-                source_url: `https://music.163.com/#/playlist?id=${info.id}`,
-                img_url: info.coverImgUrl,
-                url: `neplaylist_${info.id}`,
-                author: info.creator.nickname,
-                count: info.trackCount,
-              }));
-              total = data.result.playlistCount;
-            }
+        this.ne_ensure_cookie(() => {
+          axios
+            .post(target_url, new URLSearchParams(req_data))
+            .then((response) => {
+              const { data } = response;
+              let result = [];
+              let total = 0;
+              if (searchType === '0') {
+                result = data.result.songs.map((song_info) => ({
+                  id: `netrack_${song_info.id}`,
+                  title: song_info.name,
+                  artist: song_info.artists[0].name,
+                  artist_id: `neartist_${song_info.artists[0].id}`,
+                  album: song_info.album.name,
+                  album_id: `nealbum_${song_info.album.id}`,
+                  source: 'netease',
+                  source_url: `https://music.163.com/#/song?id=${song_info.id}`,
+                  img_url: song_info.album.picUrl,
+                  // url: `netrack_${song_info.id}`,
+                  url: !this.is_playable(song_info) ? '' : undefined,
+                }));
+                total = data.result.songCount;
+              } else if (searchType === '1') {
+                result = data.result.playlists.map((info) => ({
+                  id: `neplaylist_${info.id}`,
+                  title: info.name,
+                  source: 'netease',
+                  source_url: `https://music.163.com/#/playlist?id=${info.id}`,
+                  img_url: info.coverImgUrl,
+                  url: `neplaylist_${info.id}`,
+                  author: info.creator.nickname,
+                  count: info.trackCount,
+                }));
+                total = data.result.playlistCount;
+              }
 
-            return fn({
-              result,
-              total,
-              type: searchType,
-            });
-          })
-          .catch(() =>
-            fn({
-              result: [],
-              total: 0,
-              type: searchType,
+              return fn({
+                result,
+                total,
+                type: searchType,
+              });
             })
-          );
+            .catch(() =>
+              fn({
+                result: [],
+                total: 0,
+                type: searchType,
+              })
+            );
+        });
       },
     };
   }
